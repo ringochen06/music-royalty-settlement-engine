@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: royalty-db
+    environment:
+      POSTGRES_USER: royalty
+      POSTGRES_PASSWORD: royalty_dev
+      POSTGRES_DB: royalty_engine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U royalty -d royalty_engine"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: royalty-api
+    environment:
+      DATABASE_URL: postgresql://royalty:royalty_dev@db:5432/royalty_engine
+      ENVIRONMENT: development
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
