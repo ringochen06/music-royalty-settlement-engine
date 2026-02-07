@@ -59,7 +59,9 @@ class Account(Base):
     normal_balance: Mapped[NormalBalance] = mapped_column(
         Enum(NormalBalance, name="normal_balance"), nullable=False
     )
-    party_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    party_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("parties.id"), nullable=True
+    )
     is_system_account: Mapped[bool] = mapped_column(Boolean, default=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

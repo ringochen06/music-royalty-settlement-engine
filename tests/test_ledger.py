@@ -1,6 +1,6 @@
 """Tests for the ledger module."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import uuid4
 
@@ -69,7 +69,7 @@ class TestJournalEntries:
         revenue = accounts["4100"]
 
         entry = ledger_service.create_journal_entry(
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             description="Revenue receipt",
             postings=[
                 PostingLine(cash.id, Money.from_dollars("100"), is_debit=True),
@@ -87,7 +87,7 @@ class TestJournalEntries:
 
         with pytest.raises(LedgerBalanceError) as exc:
             ledger_service.create_journal_entry(
-                occurred_at=datetime.utcnow(),
+                occurred_at=datetime.now(timezone.utc),
                 description="Unbalanced",
                 postings=[
                     PostingLine(cash.id, Money.from_dollars("100"), is_debit=True),
@@ -100,7 +100,7 @@ class TestJournalEntries:
     def test_single_posting_rejected(self, accounts, ledger_service):
         with pytest.raises(ValueError, match="at least 2 postings"):
             ledger_service.create_journal_entry(
-                occurred_at=datetime.utcnow(),
+                occurred_at=datetime.now(timezone.utc),
                 description="Single",
                 postings=[PostingLine(accounts["1000"].id, Money.from_dollars("100"), is_debit=True)],
             )
@@ -108,7 +108,7 @@ class TestJournalEntries:
     def test_invalid_account_rejected(self, accounts, ledger_service):
         with pytest.raises(AccountNotFoundError):
             ledger_service.create_journal_entry(
-                occurred_at=datetime.utcnow(),
+                occurred_at=datetime.now(timezone.utc),
                 description="Invalid",
                 postings=[
                     PostingLine(accounts["1000"].id, Money.from_dollars("100"), is_debit=True),
@@ -124,7 +124,7 @@ class TestBalanceCalculation:
         revenue = accounts["4100"]
 
         ledger_service.create_journal_entry(
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             description="Revenue",
             postings=[
                 PostingLine(cash.id, Money.from_dollars("1000"), is_debit=True),
@@ -140,7 +140,7 @@ class TestBalanceCalculation:
         payable = accounts["2100"]
 
         ledger_service.create_journal_entry(
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             description="Payable",
             postings=[
                 PostingLine(cash.id, Money.from_dollars("500"), is_debit=True),
@@ -159,7 +159,7 @@ class TestReversals:
         revenue = accounts["4100"]
 
         original = ledger_service.create_journal_entry(
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             description="Original",
             postings=[
                 PostingLine(cash.id, Money.from_dollars("100"), is_debit=True),
@@ -181,7 +181,7 @@ class TestReversals:
         revenue = accounts["4100"]
 
         original = ledger_service.create_journal_entry(
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             description="Original",
             postings=[
                 PostingLine(cash.id, Money.from_dollars("100"), is_debit=True),
@@ -204,7 +204,7 @@ class TestTrialBalance:
         assert tb["is_balanced"] is True
 
         ledger_service.create_journal_entry(
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             description="Entry",
             postings=[
                 PostingLine(accounts["1000"].id, Money.from_dollars("1000"), is_debit=True),
@@ -222,7 +222,7 @@ class TestMultiLineEntry:
 
     def test_revenue_split_entry(self, accounts, ledger_service, db_session):
         entry = ledger_service.create_journal_entry(
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             description="Revenue split",
             postings=[
                 PostingLine(accounts["1000"].id, Money.from_dollars("100"), is_debit=True),

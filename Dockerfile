@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 COPY pyproject.toml README.md ./
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -e ".[dev]"
+RUN pip install --no-cache-dir -e .
 
 # Copy application code
 COPY . .

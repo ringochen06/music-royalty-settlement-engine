@@ -4,7 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import settings
+from src.contracts.router import router as contracts_router
 from src.ledger.router import router as ledger_router
+from src.parties.router import router as parties_router
 
 app = FastAPI(
     title="Music Royalty Settlement Engine",
@@ -41,10 +43,10 @@ def root() -> dict:
 
 
 app.include_router(ledger_router, prefix=f"{settings.api_v1_prefix}/ledger", tags=["Ledger"])
+app.include_router(parties_router, prefix=f"{settings.api_v1_prefix}/parties", tags=["Parties"])
+app.include_router(contracts_router, prefix=f"{settings.api_v1_prefix}/contracts", tags=["Contracts"])
 
 # TODO: Add remaining routers
-# app.include_router(parties_router, prefix=f"{settings.api_v1_prefix}/parties")
-# app.include_router(contracts_router, prefix=f"{settings.api_v1_prefix}/contracts")
 # app.include_router(ingestion_router, prefix=f"{settings.api_v1_prefix}/ingestion")
 # app.include_router(settlement_router, prefix=f"{settings.api_v1_prefix}/settlements")
 # app.include_router(reports_router, prefix=f"{settings.api_v1_prefix}/reports")

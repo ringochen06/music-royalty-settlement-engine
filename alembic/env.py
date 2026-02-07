@@ -10,6 +10,8 @@ from src.database import Base
 
 # Import all models so Alembic can detect them
 from src.ledger import models as ledger_models  # noqa: F401
+from src.parties import models as parties_models  # noqa: F401
+from src.contracts import models as contracts_models  # noqa: F401
 
 # this is the Alembic Config object
 config = context.config

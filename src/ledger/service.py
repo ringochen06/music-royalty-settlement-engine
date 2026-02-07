@@ -1,7 +1,7 @@
 """Ledger service - double-entry accounting logic."""
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import select
@@ -164,7 +164,7 @@ class LedgerService:
         if journal.status == JournalStatus.POSTED:
             raise ValueError("Journal entry already posted")
         journal.status = JournalStatus.POSTED
-        journal.posted_at = datetime.utcnow()
+        journal.posted_at = datetime.now(timezone.utc)
         self.db.flush()
 
     def get_journal_entry(self, entry_id: UUID) -> JournalEntry | None:
@@ -224,7 +224,7 @@ class LedgerService:
         ]
 
         reversal = self.create_journal_entry(
-            occurred_at=occurred_at or datetime.utcnow(),
+            occurred_at=occurred_at or datetime.now(timezone.utc),
             description=description or f"Reversal of: {original.description}",
             postings=reversed_postings,
             reference_type="reversal",
@@ -275,7 +275,7 @@ class LedgerService:
             })
 
         return {
-            "as_of_date": as_of_date or datetime.utcnow(),
+            "as_of_date": as_of_date or datetime.now(timezone.utc),
             "line_items": line_items,
             "total_debits_micros": total_debits,
             "total_credits_micros": total_credits,
