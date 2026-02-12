@@ -55,7 +55,7 @@ export default function Dashboard() {
           <p className="text-yellow-800 mb-4">No accounts found. Initialize the chart of accounts?</p>
           <button
             onClick={handleSeedAccounts}
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+            className="bg-gray-900 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 shadow-sm hover:shadow-md transition-all"
           >
             Seed Standard Accounts
           </button>

@@ -3,10 +3,16 @@ import type {
   AccountBalance,
   AccountType,
   CreateAccountRequest,
+  CreateIngestionJobRequest,
   CreateJournalEntryRequest,
+  IngestionJob,
+  IngestionJobList,
+  JobStatus,
   JournalEntry,
   JournalEntryList,
   JournalStatus,
+  StreamingRecord,
+  StreamingRecordList,
   TrialBalance,
 } from '../types';
 
@@ -83,4 +89,54 @@ export async function reverseJournalEntry(id: string): Promise<JournalEntry> {
 // Reports
 export async function getTrialBalance(): Promise<TrialBalance> {
   return request<TrialBalance>(`${API_BASE}/trial-balance`);
+}
+
+// Ingestion
+const INGESTION_API_BASE = '/api/v1/ingestion';
+
+export async function getIngestionJobs(
+  page = 1,
+  pageSize = 20,
+  status?: JobStatus
+): Promise<IngestionJobList> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+  if (status) params.set('status', status);
+  return request<IngestionJobList>(`${INGESTION_API_BASE}/jobs?${params}`);
+}
+
+export async function getIngestionJob(id: string): Promise<IngestionJob> {
+  return request<IngestionJob>(`${INGESTION_API_BASE}/jobs/${id}`);
+}
+
+export async function getIngestionJobByStatementId(statementId: string): Promise<IngestionJob> {
+  return request<IngestionJob>(`${INGESTION_API_BASE}/jobs/statement/${statementId}`);
+}
+
+export async function createIngestionJob(data: CreateIngestionJobRequest): Promise<IngestionJob> {
+  return request<IngestionJob>(`${INGESTION_API_BASE}/jobs`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function getStreamingRecords(
+  page = 1,
+  pageSize = 20,
+  jobId?: string,
+  trackId?: string
+): Promise<StreamingRecordList> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+  if (jobId) params.set('job_id', jobId);
+  if (trackId) params.set('track_id', trackId);
+  return request<StreamingRecordList>(`${INGESTION_API_BASE}/records?${params}`);
+}
+
+export async function getStreamingRecord(id: string): Promise<StreamingRecord> {
+  return request<StreamingRecord>(`${INGESTION_API_BASE}/records/${id}`);
 }

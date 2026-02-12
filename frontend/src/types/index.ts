@@ -89,6 +89,59 @@ export interface CreateJournalEntryRequest {
   postings: CreatePostingRequest[];
 }
 
+// Ingestion types
+export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface IngestionJob {
+  id: string;
+  statement_id: string;
+  file_hash: string;
+  file_name: string;
+  statement_date: string;
+  status: JobStatus;
+  total_records: number;
+  total_revenue_micros: number;
+  error_message: string | null;
+  created_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+export interface StreamingRecord {
+  id: string;
+  job_id: string;
+  track_id: string;
+  track_name: string;
+  artist_name: string;
+  streams: number;
+  revenue_micros: number;
+  statement_date: string;
+  created_at: string;
+}
+
+export interface IngestionJobList {
+  items: IngestionJob[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface StreamingRecordList {
+  items: StreamingRecord[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface CreateIngestionJobRequest {
+  statement_id: string;
+  file_name: string;
+  statement_date: string;
+  file_content: string;
+}
+
 // Helpers
 export const toDollars = (micros: number): number => micros / 1_000_000;
 export const toMicros = (dollars: number): number => Math.round(dollars * 1_000_000);

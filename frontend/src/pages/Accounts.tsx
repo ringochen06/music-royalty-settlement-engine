@@ -64,7 +64,7 @@ export default function Accounts() {
         <h1 className="text-2xl font-bold">Accounts</h1>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+          className="bg-gray-900 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 shadow-sm hover:shadow-md transition-all"
         >
           New Account
         </button>
@@ -143,7 +143,7 @@ export default function Accounts() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 border rounded hover:bg-gray-100"
+                  className="px-4 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-100 hover:border-gray-400 transition-all"
                 >
                   Cancel
                 </button>
