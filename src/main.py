@@ -8,6 +8,7 @@ from src.contracts.router import router as contracts_router
 from src.ingestion.router import router as ingestion_router
 from src.ledger.router import router as ledger_router
 from src.parties.router import router as parties_router
+from src.settlement.router import router as settlement_router
 
 app = FastAPI(
     title="Music Royalty Settlement Engine",
@@ -47,7 +48,7 @@ app.include_router(ledger_router, prefix=f"{settings.api_v1_prefix}/ledger", tag
 app.include_router(parties_router, prefix=f"{settings.api_v1_prefix}/parties", tags=["Parties"])
 app.include_router(contracts_router, prefix=f"{settings.api_v1_prefix}/contracts", tags=["Contracts"])
 app.include_router(ingestion_router, prefix=f"{settings.api_v1_prefix}/ingestion", tags=["Ingestion"])
+app.include_router(settlement_router, prefix=f"{settings.api_v1_prefix}/settlements", tags=["Settlement"])
 
 # TODO: Add remaining routers
-# app.include_router(settlement_router, prefix=f"{settings.api_v1_prefix}/settlements")
 # app.include_router(reports_router, prefix=f"{settings.api_v1_prefix}/reports")

@@ -1,3 +1,5 @@
+// ─── Ledger ──────────────────────────────────────────────────────────────────
+
 export type AccountType = 'asset' | 'liability' | 'revenue' | 'expense';
 export type NormalBalance = 'debit' | 'credit';
 export type JournalStatus = 'pending' | 'posted' | 'reversed';
@@ -68,7 +70,6 @@ export interface TrialBalance {
   is_balanced: boolean;
 }
 
-// Request types
 export interface CreateAccountRequest {
   account_number: string;
   name: string;
@@ -89,7 +90,107 @@ export interface CreateJournalEntryRequest {
   postings: CreatePostingRequest[];
 }
 
-// Ingestion types
+// ─── Parties ─────────────────────────────────────────────────────────────────
+
+export type PartyType =
+  | 'artist'
+  | 'label'
+  | 'producer'
+  | 'publisher'
+  | 'distributor'
+  | 'songwriter';
+
+export type PartyStatus = 'active' | 'inactive' | 'suspended';
+
+export interface Party {
+  id: string;
+  name: string;
+  party_type: PartyType;
+  status: PartyStatus;
+  email: string | null;
+  phone: string | null;
+  external_id: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PartyList {
+  items: Party[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface CreatePartyRequest {
+  name: string;
+  party_type: PartyType;
+  email?: string;
+  phone?: string;
+  external_id?: string;
+  notes?: string;
+}
+
+export interface UpdatePartyRequest {
+  name?: string;
+  status?: PartyStatus;
+  email?: string;
+  phone?: string;
+  notes?: string;
+}
+
+// ─── Contracts ───────────────────────────────────────────────────────────────
+
+export type ContractStatus = 'draft' | 'active' | 'expired' | 'terminated';
+
+export interface ContractSplit {
+  id: string;
+  contract_id: string;
+  party_id: string;
+  share_bps: number;
+  role: string | null;
+  created_at: string;
+}
+
+export interface Contract {
+  id: string;
+  name: string;
+  track_id: string;
+  status: ContractStatus;
+  effective_date: string;
+  expiry_date: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  splits: ContractSplit[];
+}
+
+export interface ContractList {
+  items: Contract[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface ContractSplitRequest {
+  party_id: string;
+  share_bps: number;
+  role?: string;
+}
+
+export interface CreateContractRequest {
+  name: string;
+  track_id: string;
+  effective_date: string;
+  expiry_date?: string;
+  description?: string;
+  splits: ContractSplitRequest[];
+}
+
+// ─── Ingestion ────────────────────────────────────────────────────────────────
+
 export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export interface IngestionJob {
@@ -142,12 +243,79 @@ export interface CreateIngestionJobRequest {
   file_content: string;
 }
 
-// Helpers
+// ─── Settlement ───────────────────────────────────────────────────────────────
+
+export type SettlementStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface SettlementAllocation {
+  id: string;
+  line_id: string;
+  party_id: string;
+  share_bps: number;
+  amount_micros: number;
+}
+
+export interface SettlementLine {
+  id: string;
+  run_id: string;
+  track_id: string;
+  track_name: string;
+  contract_id: string | null;
+  gross_micros: number;
+  platform_fee_micros: number;
+  net_micros: number;
+  is_unmatched: boolean;
+  journal_entry_id: string | null;
+  created_at: string;
+  allocations: SettlementAllocation[];
+}
+
+export interface SettlementRun {
+  id: string;
+  job_id: string;
+  statement_id: string;
+  status: SettlementStatus;
+  platform_fee_bps: number;
+  total_tracks: number;
+  matched_tracks: number;
+  unmatched_tracks: number;
+  total_gross_micros: number;
+  total_platform_fee_micros: number;
+  total_net_micros: number;
+  total_unmatched_micros: number;
+  error_message: string | null;
+  created_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  lines: SettlementLine[];
+}
+
+export interface SettlementRunList {
+  items: SettlementRun[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface SettlementLineList {
+  items: SettlementLine[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface CreateSettlementRunRequest {
+  job_id: string;
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 export const toDollars = (micros: number): number => micros / 1_000_000;
 export const toMicros = (dollars: number): number => Math.round(dollars * 1_000_000);
-export const formatDollars = (micros: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(toDollars(micros));
-};
+export const formatDollars = (micros: number): string =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+    toDollars(micros)
+  );
+export const formatBps = (bps: number): string => `${(bps / 100).toFixed(2)}%`;

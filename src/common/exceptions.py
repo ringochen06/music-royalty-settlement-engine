@@ -93,3 +93,15 @@ class IngestionValidationError(RoyaltyEngineError):
         details = {"error_count": len(errors) if errors else 0, "errors": errors or []}
         super().__init__(message, details)
         self.errors = errors or []
+
+
+class SettlementRunNotFoundError(RoyaltyEngineError):
+    def __init__(self, run_id: str):
+        super().__init__(f"Settlement run not found: {run_id}", {"run_id": run_id})
+        self.run_id = run_id
+
+
+class IngestionJobNotFoundError(RoyaltyEngineError):
+    def __init__(self, job_id: str):
+        super().__init__(f"Ingestion job not found: {job_id}", {"job_id": job_id})
+        self.job_id = job_id
