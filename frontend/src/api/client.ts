@@ -1,6 +1,7 @@
 import type {
   Account,
   AccountBalance,
+  AccountBalancesReport,
   AccountType,
   Contract,
   ContractList,
@@ -19,12 +20,14 @@ import type {
   JournalStatus,
   Party,
   PartyList,
+  PartyStatementReport,
   PartyStatus,
   PartyType,
   SettlementLineList,
   SettlementRun,
   SettlementRunList,
   SettlementStatus,
+  SettlementSummaryReport,
   StreamingRecord,
   StreamingRecordList,
   TrialBalance,
@@ -236,4 +239,32 @@ export async function getSettlementLines(
 ): Promise<SettlementLineList> {
   const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
   return request<SettlementLineList>(`${SETTLEMENTS}/runs/${runId}/lines?${params}`);
+}
+
+// ─── Reports ─────────────────────────────────────────────────────────────────
+
+const REPORTS = '/api/v1/reports';
+
+export async function getReportTrialBalance(): Promise<TrialBalance> {
+  return request<TrialBalance>(`${REPORTS}/trial-balance`);
+}
+
+export async function getReportAccountBalances(): Promise<AccountBalancesReport> {
+  return request<AccountBalancesReport>(`${REPORTS}/account-balances`);
+}
+
+export async function getReportSettlementSummary(runId: string): Promise<SettlementSummaryReport> {
+  return request<SettlementSummaryReport>(`${REPORTS}/settlement-summary/${runId}`);
+}
+
+export async function getReportPartyStatement(
+  partyId: string,
+  fromDate?: string,
+  toDate?: string
+): Promise<PartyStatementReport> {
+  const params = new URLSearchParams();
+  if (fromDate) params.set('from_date', fromDate);
+  if (toDate) params.set('to_date', toDate);
+  const qs = params.toString();
+  return request<PartyStatementReport>(`${REPORTS}/party-statement/${partyId}${qs ? `?${qs}` : ''}`);
 }

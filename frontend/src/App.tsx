@@ -7,6 +7,7 @@ import Ingestion from './pages/Ingestion';
 import Parties from './pages/Parties';
 import Contracts from './pages/Contracts';
 import Settlements from './pages/Settlements';
+import Reports from './pages/Reports';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="parties" element={<Parties />} />
         <Route path="contracts" element={<Contracts />} />
         <Route path="settlements" element={<Settlements />} />
+        <Route path="reports" element={<Reports />} />
       </Route>
     </Routes>
   );

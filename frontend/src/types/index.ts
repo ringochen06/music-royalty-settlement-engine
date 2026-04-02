@@ -310,6 +310,73 @@ export interface CreateSettlementRunRequest {
   job_id: string;
 }
 
+// ─── Reports ─────────────────────────────────────────────────────────────────
+
+export interface AccountBalanceRow {
+  account_id: string;
+  account_number: string;
+  account_name: string;
+  account_type: AccountType;
+  normal_balance: NormalBalance;
+  balance_micros: number;
+  balance_dollars: number;
+}
+
+export interface AccountBalancesReport {
+  generated_at: string;
+  accounts: AccountBalanceRow[];
+  total_assets_micros: number;
+  total_liabilities_micros: number;
+  total_revenue_micros: number;
+  total_expenses_micros: number;
+}
+
+export interface SettlementSummaryPartyRow {
+  party_id: string;
+  party_name: string;
+  party_type: string;
+  total_amount_micros: number;
+  track_count: number;
+}
+
+export interface SettlementSummaryReport {
+  run_id: string;
+  statement_id: string;
+  status: string;
+  platform_fee_bps: number;
+  generated_at: string;
+  total_tracks: number;
+  matched_tracks: number;
+  unmatched_tracks: number;
+  total_gross_micros: number;
+  total_platform_fee_micros: number;
+  total_net_micros: number;
+  total_unmatched_micros: number;
+  party_totals: SettlementSummaryPartyRow[];
+}
+
+export interface PartyStatementLineItem {
+  run_id: string;
+  statement_id: string;
+  track_id: string;
+  track_name: string;
+  share_bps: number;
+  amount_micros: number;
+  settlement_date: string;
+}
+
+export interface PartyStatementReport {
+  party_id: string;
+  party_name: string;
+  party_type: string;
+  generated_at: string;
+  from_date: string | null;
+  to_date: string | null;
+  line_items: PartyStatementLineItem[];
+  total_amount_micros: number;
+  run_count: number;
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 export const toDollars = (micros: number): number => micros / 1_000_000;
